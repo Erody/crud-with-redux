@@ -1,4 +1,5 @@
 export const SET_GAMES = 'SET_GAMES';
+export const ADD_GAME  = 'ADD_GAME';
 
 function handleResponse(res) {
 	if(res.ok) {
@@ -25,6 +26,14 @@ export function fetchGames() {
 	}
 }
 
+export function addGame(game) {
+	return {
+		type: ADD_GAME,
+		game
+	}
+}
+
+
 export function saveGame(data) {
 	return dispatch => {
 		return fetch('/api/games', {
@@ -35,5 +44,7 @@ export function saveGame(data) {
 			}
 		})
 			.then(handleResponse)
+			.then(data => dispatch(addGame(data.game)));
+
 	}
 }
