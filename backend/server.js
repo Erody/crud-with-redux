@@ -23,6 +23,13 @@ mongodb.MongoClient.connect(dbUrl, function(err, db) {
 			res.json({ games });
 		});
 	});
+	app.get('/api/games/:_id', (req, res) => {
+		db.collection('games').findOne({ _id: new mongodb.ObjectID(req.params._id) }, (err, game) => {
+			if(!err) {
+				res.json({game});
+			}
+		})
+	});
 
 	app.post('/api/games', (req, res) => {
 		const { errors, isValid } = validate(req.body);
