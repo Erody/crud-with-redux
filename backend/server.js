@@ -31,6 +31,25 @@ mongodb.MongoClient.connect(dbUrl, function(err, db) {
 		})
 	});
 
+	app.put('/api/games/:_id', (req, res) => {
+		const { errors, isValid } = validate(req.body);
+
+		if(isValid) {
+			const { title, cover } = req.body;
+			db.collection('games').findOneAndUpdate(
+				{_id: new mongodb.ObjectID(req.params._id) },
+				{ $set: { title, cover}},
+				{ returnOriginal: false},
+				(err, result) => {
+					if(err) { res.status(500).json({ errors: { global: err }}); return; }
+					res.json({ game: result.value });
+				}
+				)
+		} else {
+			res.status(400).json({ errors });
+		}
+	});
+
 	app.post('/api/games', (req, res) => {
 		const { errors, isValid } = validate(req.body);
 		if(isValid) {
@@ -49,6 +68,13 @@ mongodb.MongoClient.connect(dbUrl, function(err, db) {
 		} else {
 			res.status(400).json({ errors })
 		}
+	});
+
+	app.delete('/api/games/:_id', (req, res) => {
+		db.collection('games').deleteOne({ _id: new mongodb.ObjectID(req.params._id) }, (err, r) => {
+			if (err) { res.status(500).json({ errors: { global: err }}); return; }
+			res.json({});
+		})
 	});
 
 	app.use((req, res) => {
